@@ -161,7 +161,7 @@ sairjogo   db ' ',13,10
 ;########################################################################
 
 ; pontuacao
-pontuacao   dw      37
+pontuacao   dw      0
 texto       db      'pontuacao:    ',10,'$'
 len equ $ - texto 
 
@@ -425,8 +425,6 @@ contador    proc
 
     xor ax,ax
     xor bx,bx
-    
-    inc pontuacao
 
     mov ax, pontuacao
 
@@ -438,7 +436,7 @@ contador    proc
     mov texto[13], ah
     mov texto[14],'$'
         
-    goto_xy 30,10
+    goto_xy 58,0
     mostra texto
 
     popf
@@ -502,6 +500,7 @@ JOGO    PROC
 	CALL 	APAGA_ECRAN 
 	CALL	IMP_FICH
 	CALL 	CONTADOR
+	inc pontuacao ;teste apagar
 	CALL	MOVE_SNAKE
 		
 	MOV		AH,4CH
