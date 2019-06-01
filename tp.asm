@@ -192,9 +192,8 @@ sairjogo   db '                              Seseja mesmo sair?',13,10
 ; pontuacao e dependencias
 textPontos		db		'pontos:',10 dup(' '),'$'
 pontos			dw		0
-compr			db 		1 ;comprimento da cobra (não funciona ainda)
-tam		        dw		1			;numero de segmentos
-pl		        db		0			;assinala se há crescimento
+tam		        dw		1 ;tamanho dos segmentos
+cresc		    db		0 ;variavel para assinalar crescimento
 
 ; coordenadas para imprimir a pontuação
 pontosY			byte 	0
@@ -462,15 +461,6 @@ apaga_ecran endp
 
 
 
-
-
-
-
-
-
-
-
-
 ;########################################################################
 
 ; Legenda Editar
@@ -515,15 +505,6 @@ Legendacls   proc
         int     21h
         ret
 Legendacls   endp
-
-
-
-
-
-
-
-
-
 
 
 ;########################################################################
@@ -738,13 +719,13 @@ ler_ciclo1b:
     mov     cx,1			; numero de bytes a ler 
     lea     dx,car_m1		; vai ler para o local de memoria apontado por dx (car_fich)
     int     21h			; faz efectivamente a leitura
-	jc	erro_ler1		; se carry � porque aconteceu um erro
-	cmp	ax,0			; EOF? Verifica se j� estamos no fim do ficheiro 
-	je	fecha_ficheiro1b	; se EOF fecha o ficheiro 
+	jc	    erro_ler1		; se carry � porque aconteceu um erro
+	cmp	    ax,0			; EOF? Verifica se j� estamos no fim do ficheiro 
+	je	    fecha_ficheiro1b	; se EOF fecha o ficheiro 
     mov     ah,02h			; coloca o caracter no ecran
-    mov	dl,car_m1		; este � o caracter a enviar para o ecran
-    int	21h			; imprime no ecran
-    jmp	ler_ciclo1b		; continua a ler o ficheiro
+    mov	    dl,car_m1		; este � o caracter a enviar para o ecran
+    int	    21h			; imprime no ecran
+    jmp	    ler_ciclo1b		; continua a ler o ficheiro
 
 fecha_ficheiro1b:			; vamos fechar o ficheiro 
     mov     ah,3eh
@@ -791,7 +772,7 @@ close:
 	mov	ah, 09h
 	lea	dx, msgErrorClose
 	int	21h
-        jmp mostramenu
+    jmp mostramenu
 
 
 
@@ -1052,26 +1033,9 @@ CICLO:
 		je 		vermelho
 		cmp 	al, 'r'
 		je 		rato
-
-		
-        inc POSx
-        
-        goto_xy	POSx,POSy	; Vai para nova possição
-		mov 	ah, 08h	; Guarda o Caracter que está na posição do Cursor
-		mov		bh,0		; numero da página
-		int		10h	
-		dec   POSx
-		cmp 	al, '#'	;  na posição do Cursor
-		je		fim
-		cmp		al, 'v'
-		je		verde
-		cmp		al, 'V'
-		je 		vermelho
-		cmp 	al, 'r'
-		je 		rato
         
 ;#######################################################################
-; trail é código experimental para crescer, provavelmente é para apagar
+; trail vai servir para contar e converter os pontos
 ;#######################################################################
 
 trail:
@@ -1097,7 +1061,7 @@ goto_xy pontosX, pontosY
 verde:
     jne IMPRIME
 	add tam,1
-	mov pl,1			;assinalar que houve crescimento
+	mov cresc,1
 	add pontos,1
 	call CalcAleat
 	POP    AX
@@ -1132,7 +1096,7 @@ verde:
 vermelho:
     jne IMPRIME
 	add tam,1
-	mov pl,1				;assinalar que houve crescimento
+	mov cresc,1	 
 	add pontos,2
 	call CalcAleat
 	POP    AX
@@ -1208,116 +1172,126 @@ resetscore:
 
 IMPRIME:goto_xy		POSx,POSy	; Vai para posição do cursor	
 
-		mov		ah, 02h
-		mov		dl, 'o'	; escreve a cabeça
-		int		21H
-		cmp pl,0			;se a flag estiver a 1, adicionar um elemento ao lado da cabeça e manter o resto
-		je spo
-		goto_xy		POSxa[bx],POSya[bx]	;	
-		mov		ah,02h
-        mov		dl,'x'
-		int 21h
-		goto_xy POSx,POSy
-		jmp LER_SETA
+	mov		ah, 02h
+	mov		dl, 'o'	; escreve a cabeça
+	int		21H
+	cmp cresc,0			;se a flag estiver a 1, adicionar um elemento ao lado da cabeça e manter o resto
+	je spo
+	goto_xy		POSxa[bx],POSya[bx]	;	
+	mov		ah,02h
+    mov		dl,'x'
+	int 21h
+	goto_xy POSx,POSy
+	jmp LER_SETA
 
-spo:		mov bx,0		;index a 0 e loop com tam para atualizar posições, cada elemento fica com a posição do próximo
-		mov cx,tam
-coo:	mov al,POSxa[bx+1]
-		mov POSxa[bx],al
-		mov al,POSya[bx+1]
-		mov POSya[bx],al
-		add bx,1
-		loop coo
+spo:
+	mov bx,0		;index a 0 e loop com tam para atualizar posições, cada elemento fica com a posição do próximo
+	mov cx,tam
+coo:	
+    mov al,POSxa[bx+1]
+	mov POSxa[bx],al
+	mov al,POSya[bx+1]
+	mov POSya[bx],al
+	add bx,1
+	loop coo
 		
-		mov bx,tam		;index a tam (onde está o início da cauda) e loop que reescreve a cauda
-		mov cx,tam
+	mov bx,tam		;index a tam (onde está o início da cauda) e loop que reescreve a cauda
+	mov cx,tam
 
-co2:	goto_xy		POSxa[bx],POSya[bx]		
-		mov		ah, 02h
-		mov		dl, 'x'
-		int 21h
-		sub bx,1
-		loop co2
+co2:
+	goto_xy		POSxa[bx],POSya[bx]		
+	mov		ah, 02h
+	mov		dl, 'x'
+	int 21h
+	sub bx,1
+	loop co2
 	
-		goto_xy		POSxa[bx],POSya[bx]	;	;apaga o fim da cauda
-		mov		ah,02h
-		mov		dl,' '
-		int 21h
+	goto_xy		POSxa[bx],POSya[bx]	;	;apaga o fim da cauda
+	mov		ah,02h
+	mov		dl,' '
+	int 21h
 
 		
-		goto_xy		POSx,POSy
+	goto_xy		POSx,POSy
 		
-		jmp LER_SETA
+	jmp LER_SETA
 		
-LER_SETA:	call 		LE_TECLA_0
-		mov pl,0					;flag a 0 (sem crescimento)
-		cmp		ah, 1
-		je		ESTEND
-		CMP 		AL, 27	; ESCAPE
-		JE		FIM
+LER_SETA:
+	call 		LE_TECLA_0
+	mov cresc,0					
+	cmp		ah, 1
+	je		ESTEND
+	cmp 	AL, 27	; ESCAPE
+	je		FIM
 		
-		CALL		PASSA_TEMPO
-		mov		AX, PASSA_T_ant
-		CMP		AX, PASSA_T
-		je		LER_SETA
-		mov		AX, PASSA_T
-		mov		PASSA_T_ant, AX
+	call		PASSA_TEMPO
+	mov		AX, PASSA_T_ant
+	cmp		AX, PASSA_T
+	je		LER_SETA
+	mov		AX, PASSA_T
+	mov		PASSA_T_ant, AX
 		
-		goto_xy		POSx,POSy	; Vai para posição do cursor
-		mov 	bx,tam
-		mov		al, POSx	; guarda posição atual no elemento tam do vetor
-		mov		POSxa[bx], al
-		mov		al, POSy	
-		mov 	POSya[bx], al
+	goto_xy		POSx,POSy	; Vai para posição do cursor
+	mov 	bx,tam
+	mov		al, POSx	; guarda posição atual no elemento tam do vetor
+	mov		POSxa[bx], al
+	mov		al, POSy	
+	mov 	POSya[bx], al
 		
-verifica_0:	mov		al, direccao
-		cmp 		al, 0
-		jne		verifica_1
-		inc		POSx		;Direita
-		jmp		CICLO
+verifica_0:
+	mov		al, direccao
+	cmp 		al, 0
+	jne		verifica_1
+	inc		POSx		;Direita
+	jmp		CICLO
 		
-verifica_1:	mov 		al, direccao
-		cmp		al, 1
-		jne		verifica_2
-		dec		POSy		;cima
-		jmp		CICLO
+verifica_1:	
+    mov 		al, direccao
+	cmp		al, 1
+	jne		verifica_2
+	dec		POSy		;cima
+	jmp		CICLO
 		
-verifica_2:	mov 		al, direccao
-		cmp		al, 2
-		jne		verifica_3
-		dec		POSx		;Esquerda
-		jmp		CICLO
+verifica_2:
+	mov 		al, direccao
+	cmp		al, 2
+	jne		verifica_3
+	dec		POSx		;Esquerda
+	jmp		CICLO
 		
-verifica_3:	mov 		al, direccao
-		cmp		al, 3		
-		jne		CICLO
-		inc		POSy		;BAIXO		
-		jmp		CICLO
+verifica_3:
+	mov 		al, direccao
+	cmp		al, 3		
+	jne		CICLO
+	inc		POSy		;BAIXO		
+	jmp		CICLO
 		
-ESTEND:		cmp 		al,48h
-		jne		BAIXO
-		mov		direccao, 1
-		jmp		CICLO
+ESTEND:		
+    cmp 		al,48h
+	jne		BAIXO
+	mov		direccao, 1
+	jmp		CICLO
 		
 
-BAIXO:		cmp		al,50h
-		jne		ESQUERDA
-		mov		direccao, 3
-		jmp		CICLO
+BAIXO:	
+	cmp		al,50h
+	jne		ESQUERDA
+	mov		direccao, 3
+	jmp		CICLO
 		
 
 ESQUERDA:
-		cmp		al,4Bh
-		jne		DIREITA
-		mov		direccao, 2
-		jmp		CICLO
+	cmp		al,4Bh
+	jne		DIREITA
+	mov		direccao, 2
+	jmp		CICLO
 		
 
 DIREITA:
-		cmp		al,4Dh
-		jne		LER_SETA 
-		mov		direccao, 0	
-		jmp		CICLO
+	cmp		al,4Dh
+	jne		LER_SETA 
+	mov		direccao, 0	
+	jmp		CICLO
 
 fim:
     call apaga_ecran
@@ -1329,4 +1303,3 @@ move_snake endp
 
 codigo  ends
 end inicio
-
