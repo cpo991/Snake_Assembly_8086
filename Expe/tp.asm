@@ -165,16 +165,14 @@ sairjogo   db ' ',13,10
 
 ultimo_num_aleat dw 0
 
-; pontuacao
-pontuacao   dw      0
-texto       db      'pontuacao:    ',10,'$'
+; pontuacao e dependencias
 len equ $ - texto 
-tscore			db		'pontos:',10 dup(' '),'$'
-score			dw		0
-compr 			db 		1 ;comprimento
+textPontos		db		'pontos:',10 dup(' '),'$'
+pontos			dw		0
+compr			db 		1 ;comprimento
 
-lscore 			byte 	0
-cscore 			byte 	52
+pontosy			byte 	0
+pontosX 		byte 	52
 
 ; simbolos maças
 
@@ -464,39 +462,6 @@ passa_tempo   endp
 
 ;########################################################################
 
-; imprimir pontuacao
-
-;contador    proc
-;    pushf
-;    push ax
-;    push bx
-;    push cx
-;    push dx
-
-;    xor ax,ax
-;    xor bx,bx
-
-;    mov ax, pontuacao
-
-;    mov bl,10
-;    div bl
-;    add ah, 30h
-;    add al, 30h
-;    mov texto[12], al
-;    mov texto[13], ah
-;    mov texto[14],'$'
-        
-;    goto_xy 58,0
-;    mostra texto
-
-;    popf
-;    pop dx
-;    pop cx
-;    pop bx
-;    pop ax
-;    ret
-
-;contador endp
 
 ;########################################################################
 
@@ -549,8 +514,6 @@ imp_fich    endp
 JOGO    PROC
 	CALL 	APAGA_ECRAN 
 	CALL	IMP_FICH
-;	CALL 	CONTADOR
-	inc pontuacao ;teste apagar
 	CALL	MOVE_SNAKE
 		
 	MOV		AH,4CH

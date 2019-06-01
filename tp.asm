@@ -156,10 +156,12 @@ sairjogo   db '                              Seseja mesmo sair?',13,10
 
 ; desenha tabuleiro
     
-    posy    db  10  ; a linha pode ir de [1 .. 25]
-    posx    db  40  ; posx pode ir [1..80]  
+    posy        db  10  ; a linha pode ir de [1 .. 25]
+    posx        db  40  ; posx pode ir [1..80]  
     posya       db  5   ; posição anterior de y
     posxa       db  10  ; posição anterior de x
+    posxm       db      ? ; posição X maçã
+    posym       db      ? ; posição Y maçã
         
     passa_t     dw  0
     passa_t_ant dw  0
@@ -182,10 +184,20 @@ sairjogo   db '                              Seseja mesmo sair?',13,10
     
 ;########################################################################
 
-; pontuacao
-pontuacao   dw      0
-texto       db      'pontuacao:    ',10,'$'
+; pontuacao e dependencias
 len equ $ - texto 
+textPontos		db		'pontos:',10 dup(' '),'$'
+pontos			dw		0
+compr			db 		1 ;comprimento
+
+pontosY			byte 	0
+pontosX 		byte 	52
+
+; simbolos da maçã/rato
+Sverde        byte    'v$'
+Svermelha     byte    'V$'
+SRato         byte    'r$'
+
 ;########################################################################
 
 ; legenda editar
@@ -844,7 +856,40 @@ le_tecla_0  endp
     
 ;########################################################################
 
-; abre ficheiro
+CalcAleat proc near
+
+	sub	sp, 2
+	push	bp
+	mov	bp, sp
+	push	ax
+	push	cx
+	push	dx	
+	mov	ax,[bp+4]
+	mov	[bp+2],ax
+
+	mov	ah,00h
+	int	1ah
+
+	add	dx,ultimo_num_aleat	; vai buscar o aleatório anterior
+	add	cx,dx	
+	mov	ax,65521
+	push	dx
+	mul	cx			
+	pop	dx			 
+	xchg	dl,dh
+	add	dx,32749
+	add	dx,ax
+
+	mov	ultimo_num_aleat,dx	; guarda o novo numero aleatório  
+
+	mov	[BP+4],dx		; o aleatório é passado por pilha
+
+	pop	dx
+	pop	cx
+	pop	ax
+	pop	bp
+	ret
+CalcAleat endp
 
 ;########################################################################
 
@@ -887,39 +932,6 @@ passa_tempo   endp
 
 ;########################################################################
 
-; imprimir pontuacao
-
-contador    proc
-    pushf
-    push ax
-    push bx
-    push cx
-    push dx
-
-    xor ax,ax
-    xor bx,bx
-
-    mov ax, pontuacao
-
-    mov bl,10
-    div bl
-    add ah, 30h
-    add al, 30h
-    mov texto[12], al
-    mov texto[13], ah
-    mov texto[14],'$'
-        
-    goto_xy 58,0
-    mostra texto
-
-    popf
-    pop dx
-    pop cx
-    pop bx
-    pop ax
-    ret
-
-contador endp
 
 ;########################################################################
 
@@ -972,8 +984,6 @@ imp_fich    endp
 JOGO    PROC
 	CALL 	APAGA_ECRAN 
 	CALL	IMP_FICH
-	CALL 	CONTADOR
-	inc pontuacao ;teste apagar
 	CALL	MOVE_SNAKE
 		
 	MOV		AH,4CH
@@ -981,72 +991,261 @@ JOGO    PROC
 JOGO    ENDP
 
 
+;########################################################################
+;             Converte a pontuação para texto.
+;########################################################################
+
+converte proc
+    
+    PUSHF
+    PUSH AX
+    PUSH BX
+    PUSH DX
+    
+    add    di, 15
+    mov    bx, 10
+    
+    mov    ax,[SI]
+    
+ciclo:
+    xor    dx,dx
+    div    bx
+    add    dl,48
+    mov    [di],dl
+    dec    di
+    cmp    ax,0
+    jne ciclo
+    
+    POP AX
+    POP BX
+    POP DX
+    POPF
+    
+    ret
+    
+converte endp
+
+
 ; move snake
 move_snake proc
-call contador
-goto_xy 40,15
-;call PRINC
-ciclo:  
-    
-    goto_xy     posx,posy   ; vai para nova posição
-    mov     ah, 08h ; guarda o caracter que está na posição do cursor
-    mov     bh,0        ; numero da página
-    int     10h         
-    cmp     al, '#' ;  na posição do cursor
-    ;guarda pontuação
-    ;aparece game over
-    je      sair
-
-    goto_xy     posxa,posya     ; vai para a posição anterior do cursor
-    mov     ah, 02h
-    mov     dl, ' '     ; coloca espaço
-    int     21h 
-
-;quando anda coloca espaço atrás
-    inc     posxa
-    goto_xy     posxa,posya 
-    mov     ah, 02h
-    mov     dl, ' '     ;  coloca espaço
-    int     21h 
-    dec     posxa
+CICLO:	
+		goto_xy	POSx,POSy	; Vai para nova possição
+		mov 	ah, 08h	; Guarda o Caracter que está na posição do Cursor
+		mov		bh,0		; numero da página
+		int		10h			
+		cmp 	al, '#'	;  na posição do Cursor
+		je		fim
+		cmp		al, 'v'
+		je		verde
+		cmp		al, 'V'
+		je 		vermelho
+		cmp 	al, 'r'
+		je 		rato
+		
+        inc POSx
         
-    goto_xy     posx,posy   ; vai para posição do cursor
-
-imprime:
-
-; para aumentar a cobra é:
-; posição do cursor anterior
-; coloca avatar 1
-; coloca avatar 2
-; guarda
-
-    mov     ah, 02h
-    mov     dl, '(' ; coloca avatar1
-    int     21h
-    
-    inc     posx
-    goto_xy     posx,posy       
-    mov     ah, 02h
-    mov     dl, ')' ; coloca avatar2
-    int     21h 
-    dec     posx
+        goto_xy	POSx,POSy	; Vai para nova possição
+		mov 	ah, 08h	; Guarda o Caracter que está na posição do Cursor
+		mov		bh,0		; numero da página
+		int		10h	
+		dec   POSx
+		cmp 	al, '#'	;  na posição do Cursor
+		je		fim
+		cmp		al, 'v'
+		je		verde
+		cmp		al, 'V'
+		je 		vermelho
+		cmp 	al, 'r'
+		je 		rato
         
-    goto_xy     posx,posy   ; vai para posição do cursor
-        
-    mov     al, posx    ; guarda a posição do cursor
-    mov     posxa, al
-    mov     al, posy    ; guarda a posição do cursor
-    mov     posya, al
-        
-ler_seta:   
-    call    le_tecla_0
-    cmp     ah, 1
-    je      estend
-    cmp     al, 27  ; escape
-    je      fim
-    cmp     al, '1'
-    jne     teste_2
-    mov     factor, 100
+  
+
+trail:
+
+	lea si,pontos ;meter o ponteiro do espaço de memoria que tem um valor igual ao o que esta em pontos e copiar esse ponteiro para si
+	lea di,textPontos ;meter o ponteiro do espaço de memoria que tem um valor igual ao o que esta em textPontos e copiar esse ponteiro para di
+	call converte ;chama a funçao que converte os numeros em texto
+
+JogoEscreve:
+goto_xy pontosX, pontosY
+        mov     ah,09h
+        lea     dx,textPontos
+        int     21h
+
+		
+apagatrail:
+
+		goto_xy		POSxa,POSya		; Vai para a posição anterior do cursor
+		mov		ah, 02h
+		mov		dl, ' ' 	; Coloca ESPAÇO
+		int		21H	
+
+		inc		POSxa
+		goto_xy		POSxa,POSya	
+		mov		ah, 02h
+		mov		dl, ' '		;  Coloca ESPAÇO
+		int		21H	
+		dec 	POSxa
+		inc 	cl
+		
+		
+	
+		goto_xy		POSx,POSy	; Vai para posição do cursor
+jmp IMPRIME
+
+verde:
+	add pontos,1
+	add compr,1
+	call CalcAleat
+	POP    AX
+	
+	XOR    DX,DX
+	MOV    BX,60
+	div    BX
+	
+	ADD     DL,5
+	mov    posxm,DL
+	
+	call CalcAleat
+	POP    AX
+	
+	XOR    DX,DX
+	MOV    BX,15
+	div    BX
+	
+	ADD     DL,3
+	mov    posym,DL
+	
+	goto_xy posxm,posym
+    mov     ah,09h
+        lea     dx,Sverde
+        int     21h
+	jmp trail
+	
+
+vermelho:
+	add pontos,2
+	add compr,2
+	call CalcAleat
+	POP    AX
+	
+	XOR    DX,DX
+	MOV    BX,60
+	div    BX
+	
+	ADD     DL,5
+	mov    posxm,DL
+	
+	call CalcAleat
+	POP    AX
+	
+	XOR    DX,DX
+	MOV    BX,15
+	div    BX
+	
+	ADD     DL,3
+	mov    posym,DL
+	
+	goto_xy posxm,posym
+    mov     ah,09h
+        lea     dx,Svermelha
+        int     21h
+	jmp trail
+
+rato:
+
+    cmp pontos,3
+    jl  resetscore
+	sub pontos,3
+continuarato:
+	cmp compr, 6
+	jl lower
+	sub compr,5
+	call CalcAleat
+	POP    AX
+	
+	XOR    DX,DX
+	MOV    BX,60
+	div    BX
+	
+	ADD     DL,5
+	mov    posxm,DL
+	
+	call CalcAleat
+	POP    AX
+	
+	XOR    DX,DX
+	MOV    BX,15
+	div    BX
+	
+	ADD     DL,3
+	mov    posym,DL
+	
+	goto_xy posxm,posym
+    mov     ah,09h
+        lea     dx,SRato
+        int     21h
+	jmp trail
+lower:
+	mov compr,1
+
+	call CalcAleat
+	POP    AX
+	
+	XOR    DX,DX
+	MOV    BX,60
+	div    BX
+	
+	ADD     DL,5
+	mov    posxm,DL
+	
+	call CalcAleat
+	POP    AX
+	
+	XOR    DX,DX
+	MOV    BX,15
+	div    BX
+	
+	ADD     DL,3
+	mov    posym,DL
+	
+	goto_xy posxm,posym
+    mov     ah,09h
+        lea     dx,SRato
+        int     21h
+	jmp trail
+		
+resetscore:
+        mov pontos,0
+        jmp continuarato
+
+
+imprime:	mov		ah, 02h
+		mov		dl, '('	; Coloca AVATAR1
+		int		21H
+		
+		inc		POSx
+		goto_xy		POSx,POSy		
+		mov		ah, 02h
+		mov		dl, ')'	; Coloca AVATAR2
+		int		21H	
+		dec		POSx
+		
+		goto_xy		POSx,POSy	; Vai para posição do cursor
+		
+		mov		al, POSx	; Guarda a posição do cursor
+		mov		POSxa, al
+		mov		al, POSy	; Guarda a posição do cursor
+		mov 		POSya, al
+		
+ler_seta:	call 		LE_TECLA_0
+		cmp		ah, 1
+		je		ESTEND
+		CMP 		AL, 27	; ESCAPE
+		JE		FIM
+		CMP		AL, '1'
+		JNE		TESTE_2
+		MOV		FACTOR, 100
 teste_2:
     cmp     al, '2'
     jne     teste_3
