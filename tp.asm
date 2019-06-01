@@ -190,11 +190,19 @@ sairjogo   db '                              Seseja mesmo sair?',13,10
 ;########################################################################
 
 ; pontuacao e dependencias
+<<<<<<< HEAD
 textPontos		db		'pontos:',10 dup(' '),'$'
 pontos			dw		0
 compr			db 		1 ;comprimento da cobra (não funciona ainda)
 
 ; coordenadas para imprimir a pontuação
+=======
+len equ $ - texto 
+textPontos		db		'pontos:',10 dup(' '),'$'
+pontos			dw		0
+compr			db 		1 ;comprimento
+
+>>>>>>> master
 pontosY			byte 	0
 pontosX 		byte 	52
 
@@ -859,9 +867,13 @@ sai_tecla:
 le_tecla_0  endp
 
     
+<<<<<<< HEAD
 ;#######################################################################
 ; Calculo aleatório
 ;#######################################################################
+=======
+;########################################################################
+>>>>>>> master
 
 CalcAleat proc near
 
@@ -1065,9 +1077,13 @@ CICLO:
 		cmp 	al, 'r'
 		je 		rato
         
+<<<<<<< HEAD
 ;#######################################################################
 ; trail é código experimental para crescer, provavelmente é para apagar
 ;#######################################################################
+=======
+  
+>>>>>>> master
 
 trail:
 
@@ -1075,18 +1091,25 @@ trail:
 	lea di,textPontos ;meter o ponteiro do espaço de memoria que tem um valor igual ao o que esta em textPontos e copiar esse ponteiro para di
 	call converte ;chama a funçao que converte os numeros em texto
 
+<<<<<<< HEAD
 ;########################################################################
 ; Escreve no jogo a pontuação com coordenadas X e Y
 ;########################################################################
 
+=======
+>>>>>>> master
 JogoEscreve:
 goto_xy pontosX, pontosY
         mov     ah,09h
         lea     dx,textPontos
         int     21h
 
+<<<<<<< HEAD
 
 
+=======
+		
+>>>>>>> master
 apagatrail:
 
 		goto_xy		POSxa,POSya		; Vai para a posição anterior do cursor
@@ -1107,10 +1130,13 @@ apagatrail:
 		goto_xy		POSx,POSy	; Vai para posição do cursor
 jmp IMPRIME
 
+<<<<<<< HEAD
 ;######################################################################
 ; maçãs verdes
 ;######################################################################
 
+=======
+>>>>>>> master
 verde:
 	add pontos,1
 	add compr,1
@@ -1140,9 +1166,12 @@ verde:
         int     21h
 	jmp trail
 	
+<<<<<<< HEAD
 ;######################################################################
 ; maçãs vermelhas
 ;######################################################################
+=======
+>>>>>>> master
 
 vermelho:
 	add pontos,2
@@ -1173,10 +1202,13 @@ vermelho:
         int     21h
 	jmp trail
 
+<<<<<<< HEAD
 ;######################################################################
 ; rato
 ;######################################################################
 
+=======
+>>>>>>> master
 rato:
 
     cmp pontos,3
@@ -1239,20 +1271,27 @@ lower:
         lea     dx,SRato
         int     21h
 	jmp trail
+<<<<<<< HEAD
 
 ;######################################################################
 ; quando se come o rato, apaga pontos
 ;######################################################################
 
+=======
+		
+>>>>>>> master
 resetscore:
         mov pontos,0
         jmp continuarato
 
 
+<<<<<<< HEAD
 ;######################################################################
 ; imprime o avatar
 ;######################################################################
 
+=======
+>>>>>>> master
 imprime:	mov		ah, 02h
 		mov		dl, '('	; Coloca AVATAR1
 		int		21H
