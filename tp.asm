@@ -31,12 +31,7 @@ pilha   ends
 
 dados   segment para public 'data'
 
-menujogo   db ' ',13,10
-           db ' ',13,10
-           db ' ',13,10
-           db ' ',13,10
-           db ' ` ',13,10
-           db '                        ______                _ ',13,10
+menujogo   db '                        ______                _ ',13,10
            db '                _y_    / _____)              | |',13,10
            db '               /   \  ( (____   ____   _____ | |  _  _____ ',13,10
            db '              { * * }  \____ \ |  _ \ (____ || |_/ )| ___ |    /\ ',13,10
@@ -49,7 +44,8 @@ menujogo   db ' ',13,10
            db '   ',13,10
            db '                         1 - criar novo jogo',13,10
            db '                         2 - consultar elementos estatisticos',13,10
-           db '                         3 - sair ',13,10
+           db '                         3 - editar molduras',13,10
+           db '                         4 - sair ',13,10
            db ' ',13,10
            db ' ',13,10
            db ' ',13,10
@@ -58,27 +54,62 @@ menujogo   db ' ',13,10
            db '                                                    miguel prates - 21280382  ',13,10
            db ' ',13,10,'$'
 
-menuconf   db ' ',13,10
-           db ' ',13,10
-           db '            ______  _    ___ _             _     _           _ ',13,10
-           db '           (______)(_)  / __|_)           | |   | |         | |',13,10
-           db '            _     _ _ _| |__ _  ____ _   _| | __| |_____  __| |_____',13,10
-           db '           | |   | | (_   __) |/ ___) | | | |/ _  (____ |/ _  | ___ |',13,10
-           db '           | |__/ /| | | |  | ( (___| |_| | ( (_| / ___ ( (_| | ____|',13,10
-           db '           |_____/ |_| |_|  |_|\____)____/ \_)____\_____|\____|_____)',13,10
-           db ' ',13,10
-           db ' ',13,10
-           db '                           1 - lesma (nivel 1)',13,10
-           db '                           2 - lebre (nivel 2)',13,10
-           db '                           3 - chita (nivel 3)',13,10
-           db '                           4 - (nivel 4)',13,10
-           db '                           5 - sair ',13,10
-           db ' ',13,10
-           db ' ',13,10,'$' 
+menujogoOpt db '                             __ ',13,10
+            db '                             \ \  ___   __    ___',13,10
+            db '                              \ \/ _ \ / _` |/ _ \ ',13,10
+            db '                           /\_/ / (_) | (_| | (_) |',13,10
+            db '                           \___/ \___/ \__, |\___/',13,10
+            db '                                       |___/',13,10
+            db '  ',13,10
+            db '  ',13,10
+            db '                           1 - Jogar com Moldura Default',13,10
+            db '                           2 - Carregar Moludura editada',13,10
+            db '                           3 - Sair',13,10
+            db ' ',13,10,'$'
+
+menumoldurasconf    db '                 _____             __  _  ',13,10
+                    db '                / ____|           / _|(_)',13,10
+                    db '               | |     ___  _ __ | |_ _  __ _ _   _ _ __ __ _ _ __',13,10
+                    db '               | |    / _ \| `_ \|  _| |/ _` | | | | `__/ _` | `__|',13,10
+                    db '               | |___| (_) | | | | | | | (_| | |_| | | | (_| | |',13,10
+                    db '                \_____\___/|_| |_|_| |_|\__, |\__,_|_|  \__,_|_|',13,10
+                    db '                                         __/ |',13,10
+                    db '                                        |___/',13,10
+                    db ' ',13,10
+                    db ' ',13,10
+                    db '                           1 - Criar Grelha',13,10
+                    db '                           2 - Editar Grelha',13,10
+                    db '                           3 - Sair',13,10
+                    db ' ',13,10,'$' 
+
+menumolduras    db '                          Escolha a sua Moldura',13,10
+		        db ' ',13,10
+			    db ' ',13,10
+				db ' ',13,10
+				db ' ',13,10
+				db ' ',13,10
+				db '                           1 - Moldura 1',13,10
+                db '                           2 - Moldura 2',13,10
+			    db '                           3 - Moldura 3',13,10
+				db '                           4 - Sair',13,10
+				db ' ',13,10,'$' 
+
+menudificuldade   db '            ______  _    ___ _             _     _           _ ',13,10
+                  db '           (______)(_)  / __|_)           | |   | |         | |',13,10
+                  db '            _     _ _ _| |__ _  ____ _   _| | __| |_____  __| |_____',13,10
+                  db '           | |   | | (_   __) |/ ___) | | | |/ _  (____ |/ _  | ___ |',13,10
+                  db '           | |__/ /| | | |  | ( (___| |_| | ( (_| / ___ ( (_| | ____|',13,10
+                  db '           |_____/ |_| |_|  |_|\____)____/ \_)____\_____|\____|_____)',13,10
+                  db ' ',13,10
+                  db ' ',13,10
+                  db '                           1 - lesma (nivel 1)',13,10
+                  db '                           2 - lebre (nivel 2)',13,10
+                  db '                           3 - chita (nivel 3)',13,10
+                  db '                           4 - falcao (nivel 4)',13,10
+                  db '                           5 - sair ',13,10
+                  db ' ',13,10,'$' 
            
-menustat   db ' ',13,10 
-           db ' ',13,10 
-           db '          _______                                    _ ',13,10
+menustat   db '          _______                                     _ ',13,10
            db '         (_______)       _           _          _   /_/',13,10
            db '          _____    ___ _| |_ _____ _| |_  ___ _| |_ _  ____ _____  ___',13,10
            db '         |  ___)  /___|_   _|____ (_   _)/___|_   _) |/ ___|____ |/___)',13,10
@@ -86,18 +117,14 @@ menustat   db ' ',13,10
            db '         |_______|___/   \__)_____|  \__|___/   \__)_|\____)_____(___/',13,10
            db ' ',13,10
            db ' ',13,10 
-           db '                           1 - historico de jogos',13,10
-           db '                           2 - valores estatisticos',13,10
-           db '                           3 - sair',13,10
-           db ' ',13,10 
-           db ' ',13,10 
+           db '                           1 - Historico de jogos',13,10
+           db '                           2 - Valores estatisticos',13,10
+           db '                           3 - Sair',13,10
            db ' ',13,10,'$'        
 
-sairjogo   db ' ',13,10    
-           db '                              deseja mesmo sair?',13,10
+sairjogo   db '                              Seseja mesmo sair?',13,10
            db ' ',13,10
-           db '                        sim [1]               nao [2]',13,10
-           db ' ',13,10
+           db '                        Sim [1]               Nao [2]',13,10
            db ' ',13,10,'$'
 
 ;########################################################################
@@ -105,12 +132,12 @@ sairjogo   db ' ',13,10
 ; cria ficheiro de texto
     fname   db  'pontuacoes.txt',0
     fhandle dw  0
-    buffer  db  '1 5 6 7 8 9 1 5 7 8 9 2 3 7 8 15 16 18 19 20 3',13,10
-            db  '+ - / * * + - - + * / * + - - + * / + - - + * ',13,10
-            db  '10 12 14 7 9 11 13 5 10 15 7 8 9 10 13 5 10 11',13,10 
-            db  '/ * + - - + * / + - / * * + - - + * * + - - + ',13,10
-            db  '3 45 23 11 4 7 14 18 31 27 19 9 6 47 19 9 6 51',13,10
-            db  '______________________________________________',13,10
+    ; buffer  db  '1 5 6 7 8 9 1 5 7 8 9 2 3 7 8 15 16 18 19 20 3',13,10
+    ;         db  '+ - / * * + - - + * / * + - - + * / + - - + * ',13,10
+    ;         db  '10 12 14 7 9 11 13 5 10 15 7 8 9 10 13 5 10 11',13,10 
+    ;         db  '/ * + - - + * / + - / * * + - - + * * + - - + ',13,10
+    ;         db  '3 45 23 11 4 7 14 18 31 27 19 9 6 47 19 9 6 51',13,10
+    ;         db  '______________________________________________',13,10
     msgerrorcreate  db  "ocorreu um erro na criacao do ficheiro!$"
     msgerrorwrite   db  "ocorreu um erro na escrita para ficheiro!$"
     msgerrorclose   db  "ocorreu um erro no fecho do ficheiro!$"
@@ -127,7 +154,7 @@ sairjogo   db ' ',13,10
 
 ;########################################################################
 
-; desenha tabuleiro --- delay.asm
+; desenha tabuleiro
     
     posy    db  10  ; a linha pode ir de [1 .. 25]
     posx    db  40  ; posx pode ir [1..80]  
@@ -145,25 +172,46 @@ sairjogo   db ' ',13,10
 
 ;########################################################################
 
-; cursor
+; calculo aleatorio
     ultimo_num_aleat dw 0
-
     str_num db 5 dup(?),'$'
-    
     linha   db  0   ; define o número da linha que está a ser desenhada
     nlinhas db  0
-
-    car     db  32  ; guarda um caracter do ecran 
-    cor     db  7   ; guarda os atributos de cor do caracter
-    car2    db  32  ; guarda um caracter do ecran 
-    cor2    db  7   ; guarda os atributos de cor do caracter
-
+    Cor3			 db 0
+    Car3		 	 db	' '	
+    
 ;########################################################################
 
 ; pontuacao
 pontuacao   dw      0
 texto       db      'pontuacao:    ',10,'$'
 len equ $ - texto 
+;########################################################################
+
+; legenda editar
+Legenda_cls              db      "                               $"
+Legenda_colocar_parede   db      "1-Parede$"
+Legenda_limpar           db      "0-Apaga$"
+Legenda_guardar          db      "S-Guarda$"
+Legenda_sair             db      "ESC-sair$"
+
+;########################################################################
+
+; lvariaveis de slots de molduras
+Car            db	32
+mol            db	'moldura.TXT',0
+fhandle1       dw   0
+car_m          db   ?
+mol1           db	'mol1.TXT',0
+handle1        dw   0
+car_m1         db   ?
+mol2           db	'mol2.TXT',0
+handle2        dw   0
+car_m2         db   ?
+mol3           db	'mol3.TXT',0
+handle3        dw   0
+car_m3         db   ?
+buffer         dw   4000 dup(?)
 
 
 dados   ends
@@ -184,7 +232,7 @@ inicio:
 ; mostra menu principal
 mostramenu:       
     call apaga_ecran
-    ;goto_xy 0,0
+    goto_xy 0,0
     
     lea     dx, menujogo
     mov     ah, 09h
@@ -195,23 +243,25 @@ mostramenu:
     
     cmp     al, '1'
     jl      mostramenu
-    cmp     al,'3'
+    cmp     al,'4'
     jg      mostramenu
     
     cmp     al,'1'
-    je      mostramenuconf
+    je      mostramenujogoOpt
     cmp     al,'2'
     je      mostramenustat
     cmp     al,'3'
+    je      mostramenumoldurasE
+    cmp     al,'4'
     je      fechajogo
 
 ;########################################################################       
         
-; mostra menu configurar jogo
-mostramenuconf:
+; mostra menu escolher modo de jogo
+mostramenujogoOpt: 
     call apaga_ecran
     goto_xy 0,5
-    lea     dx, menuconf 
+    lea     dx, menujogoOpt 
     mov     ah, 09h 
     int     21h 
      
@@ -219,9 +269,33 @@ mostramenuconf:
     int     21h        
     
     cmp     al, '1' 
-    jl      mostramenuconf 
+    jl      mostramenujogoOpt 
+    cmp     al, '3'
+    jg      mostramenujogoOpt 
+        
+    cmp     al, "1"
+    je      mostramenudificuldade  
+    cmp     al, "2"
+    je      mostramenumoldurasJ
+    cmp     al, "3"
+    je      mostramenu
+;########################################################################       
+        
+; mostra menu configurar jogo
+mostramenudificuldade:
+    call apaga_ecran
+    goto_xy 0,5
+    lea     dx, menudificuldade 
+    mov     ah, 09h 
+    int     21h 
+     
+    mov     ah, 1 
+    int     21h        
+    
+    cmp     al, '1' 
+    jl      mostramenudificuldade 
     cmp     al, '5'
-    jg      mostramenuconf
+    jg      mostramenudificuldade
         
     cmp     al, "1"
     je      jogo        ;factor = 100
@@ -260,6 +334,59 @@ mostramenustat:
     cmp     al, "2"
     ;je     valstat
     cmp     al, "3"
+    je      mostramenu
+
+;########################################################################       
+        
+; mostra molduras editadas para jogar
+mostramenumoldurasJ: 
+    call apaga_ecran
+    goto_xy 0,5
+    lea     dx, menumolduras 
+    mov     ah, 09h 
+    int     21h 
+     
+    mov     ah, 1 
+    int     21h        
+    
+    cmp     al, '1' 
+    jl      mostramenumoldurasJ 
+    cmp     al, '3'
+    jg      mostramenumoldurasJ 
+        
+    cmp     al, "1"
+    je      JogarM1
+    cmp     al, "2"
+    ;je      grelhaJ2
+    cmp     al, "3"
+    ;je      grelhaJ3
+    cmp     al, "4"
+    je      mostramenu
+;########################################################################       
+        
+; mostra molduras para editar
+mostramenumoldurasE: 
+    call apaga_ecran
+    goto_xy 0,5
+    lea     dx, menumolduras 
+    mov     ah, 09h 
+    int     21h 
+     
+    mov     ah, 1 
+    int     21h        
+    
+    cmp     al, '1' 
+    jl      mostramenumoldurasE 
+    cmp     al, '4'
+    jg      mostramenumoldurasE 
+        
+    cmp     al, "1"
+    je      grelhaE1  
+    cmp     al, "2"
+    ;je      grelhaE2
+    cmp     al, "3"
+    ;je      grelhaE3
+    cmp     al, "4"
     je      mostramenu
     
 ;########################################################################   
@@ -314,6 +441,356 @@ apaga:
     ret
 apaga_ecran endp
 
+
+
+
+
+
+
+
+
+
+
+
+;########################################################################
+
+; Legenda Editar
+Legenda   proc
+        goto_xy 70,2
+        mov     ah,09h
+        lea     dx,Legenda_colocar_parede
+        int     21h
+        goto_xy 70,3
+        mov     ah,09h
+        lea     dx,Legenda_limpar
+        int     21h
+        goto_xy 70,4
+        mov     ah,09h
+        lea     dx,Legenda_guardar 
+        int     21h
+        goto_xy 70,5
+        mov     ah,09h
+        lea     dx,Legenda_sair
+        int     21h
+        ret
+Legenda   endp
+;########################################################################
+
+; Apagar Legenda
+Legendacls   proc
+        goto_xy 70,2
+        mov     ah,09h
+        lea     dx,Legenda_cls
+        int     21h
+        goto_xy 70,3
+        mov     ah,09h
+        lea     dx,Legenda_cls
+        int     21h
+        goto_xy 70,4
+        mov     ah,09h
+        lea     dx,Legenda_cls
+        int     21h
+        goto_xy 70,5
+        mov     ah,09h
+        lea     dx,Legenda_cls
+        int     21h
+        ret
+Legendacls   endp
+
+
+
+
+
+
+
+
+
+
+
+;########################################################################
+
+; Mover cursor
+EditaMold  proc
+    call    Legenda
+
+    mov	ax, DADOS
+    mov	ds,ax
+    mov	ax,0B800h
+	mov	es,ax
+;Obter posicao
+	mov     POSy,5
+    mov     POSx,10
+    goto_xy	POSx,POSy
+    goto_xy 0,0
+    mov     car,32
+CICLO:	
+
+;Imprimir Moldura
+IMPRIME:
+    mov	ah, 02h
+    mov	dl, Car
+	int	21H			
+	goto_xy	POSx,POSy
+
+    call 	le_tecla_0
+	cmp	ah, 1
+	je	ESTEND
+    cmp     al, 115
+    je      LeEcra
+	cmp 	al, 23                  ; ESCAPE
+	je	mostramenu             
+
+;Tipo de caracteres
+ZERO:
+    CMP AL, 48             ; Tecla 0
+	JNE	UM
+	mov	Car, 32                 ; espaço
+	jmp	CICLO					
+		
+UM:
+	CMP 	AL, 49             ; Tecla 1
+	JNE	Begin
+	mov	Car, 35                ; Caracter #
+	jmp	CICLO		
+Begin:
+    cmp     al,63
+    jne     Final   
+    mov     car,63
+    jmp     CICLO
+Final:	
+    cmp     al,33
+    jne     NOVE
+    mov     car,33
+    jmp	CICLO
+NOVE:
+    jmp     CICLO
+
+;Direcao cursor
+ESTEND:	
+    cmp al,48h
+	jne	BAIXO
+	dec	POSy                    ; cima
+COMPC:
+    cmp     POSy,1
+    je      INCREMy
+	jmp	CICLO
+
+BAIXO:	
+    cmp	al,50h
+	jne	ESQUERDA
+	inc 	POSy                ; Baixo
+COMPB:
+    cmp     POSy,24
+    je      DECREMy
+	jmp	CICLO
+
+ESQUERDA:
+	cmp	al,4Bh
+	jne	DIREITA
+	dec	POSx                    ; Esquerda
+COMPE:
+    cmp     POSx,1
+    je      INCREMx
+	jmp	CICLO
+
+DIREITA:
+	cmp	al,4Dh
+	jne	CICLO 
+	inc	POSx                    ; Direita
+COMPD:
+    cmp     POSx,70
+    je      DECREMx
+	jmp	CICLO
+
+DECREMy:
+    dec     POSy
+    jmp     COMPB
+
+INCREMy:
+    inc     POSy
+    jmp     COMPC
+
+INCREMx:
+    inc     POSx
+    jmp     COMPE
+
+DECREMx:
+    dec     POSx
+    jmp     COMPD
+LeEcra:
+    call    Legendacls
+    mov     ax,0b800h
+	mov     es,ax
+        
+    mov	al,0h
+	mov	bx,0
+    xor     si,si
+    xor     di,di
+    mov     cx,4000
+
+cicloLe:   
+	mov     ax,es:[di]
+    mov     buffer[si],ax
+	add     si,2
+    add     di,2
+    loop    cicloLe
+    ret
+EditaMold	endp
+
+;########################################################################
+
+; Jogar moldura criada
+JogarM1: 
+    call    apaga_ecran
+    goto_xy 0,0
+;abre ficheiro
+    mov     ah,3dh			; vamos abrir ficheiro para leitura 
+    mov     al,0			; tipo de ficheiro	
+    lea     dx,mol1			; nome do ficheiro
+    int     21h			; abre para leitura 
+    jc      erro_ler1		; pode aconter erro a abrir o ficheiro 
+    mov     Handle1,ax		; ax devolve o Handle para o ficheiro 
+    jmp     ler_ciclo1		; depois de abero vamos ler o ficheiro 
+
+ler_ciclo1:
+    mov     ah,3fh			; indica que vai ser lido um ficheiro 
+    mov     bx,Handle1		; bx deve conter o Handle do ficheiro previamente aberto 
+    mov     cx,1			; numero de bytes a ler 
+    lea     dx,car_m1		; vai ler para o local de memoria apontado por dx (car_fich)
+    int     21h			; faz efectivamente a leitura
+	jc	erro_ler1		; se carry � porque aconteceu um erro
+	cmp	ax,0			; EOF? Verifica se j� estamos no fim do ficheiro 
+	je	fecha_ficheiro1         ; se EOF fecha o ficheiro  
+    mov     ah,02h			; coloca o caracter no ecran
+    mov	dl,car_m1		; este � o caracter a enviar para o ecran
+    int	21h			; imprime no ecran
+    
+    jmp	ler_ciclo1		; continua a ler o ficheiro
+
+ler_comeco1:
+    push    ax
+    push    bx
+    push    dx
+    mov     bh,0
+    mov     ah,03h
+    int     10h
+    dec     dl                      ; identa��o da leitura "puxa" o eixo X para a esquerda
+    dec     dh                      ; identa��o da leitura "puxa" o eixo Y para baixo
+    mov     posx,dl
+    mov     posy,dh
+    pop     dx
+    pop     bx
+    pop     ax
+    jmp     ler_ciclo1
+
+erro_ler1:
+    mov     ah,09h
+    lea     dx,Erro_Ler_Msg
+    int     21h 
+
+fecha_ficheiro1:			; vamos fechar o ficheiro 
+    mov     ah,3eh
+    mov     bx,Handle1
+    int     21h
+    jmp     JogaMolduras
+
+JogaMolduras:
+    goto_xy 40,10
+    call move_snake
+
+
+;########################################################################
+
+; Editar moldura
+grelhaE1:
+       call apaga_ecran
+;abre ficheiro
+    mov     ah,3dh			; vamos abrir ficheiro para leitura 
+    mov     al,0			; tipo de ficheiro	
+    lea     dx,mol1			; nome do ficheiro
+    int     21h			; abre para leitura 
+    jc      erro_ler1		; pode aconter erro a abrir o ficheiro 
+    mov     Handle1,ax		; ax devolve o Handle para o ficheiro 
+    jmp     ler_ciclo1b		; depois de abero vamos ler o ficheiro 
+
+ler_ciclo1b:
+    mov     ah,3fh			; indica que vai ser lido um ficheiro 
+    mov     bx,Handle1		; bx deve conter o Handle do ficheiro previamente aberto 
+    mov     cx,1			; numero de bytes a ler 
+    lea     dx,car_m1		; vai ler para o local de memoria apontado por dx (car_fich)
+    int     21h			; faz efectivamente a leitura
+	jc	erro_ler1		; se carry � porque aconteceu um erro
+	cmp	ax,0			; EOF? Verifica se j� estamos no fim do ficheiro 
+	je	fecha_ficheiro1b	; se EOF fecha o ficheiro 
+    mov     ah,02h			; coloca o caracter no ecran
+    mov	dl,car_m1		; este � o caracter a enviar para o ecran
+    int	21h			; imprime no ecran
+    jmp	ler_ciclo1b		; continua a ler o ficheiro
+
+fecha_ficheiro1b:			; vamos fechar o ficheiro 
+    mov     ah,3eh
+    mov     bx,Handle1
+    int     21h
+     
+    call    EditaMold
+    call    GuardaM1
+
+;########################################################################
+
+; Guardar Molduras
+GuardaM1:  
+	mov	ah, 3ch			; abrir ficheiro para escrita 
+	mov	cx, 00H			; tipo de ficheiro
+	lea	dx, mol1		; dx contem endereco do nome do ficheiro 
+	int	21h			    ; abre efectivamente e AX vai ficar com o Handle do ficheiro 
+	jnc	escreve			; se n�o acontecer erro vamos escrever
+	
+	mov	ah, 09h			; Aconteceu erro na leitura
+	lea	dx, msgErrorCreate
+	int	21h
+	
+	jmp	sair
+
+escreve:
+	mov	bx, ax			; para escrever BX deve conter o Handle 
+	mov	ah, 40h			; indica que vamos escrever 
+    	
+	lea	dx, buffer		; Vamos escrever o que estiver no endere�o DX
+	mov	cx, 4000		; vamos escrever multiplos bytes duma vez s�
+	int	21h			; faz a escrita 
+	jnc	close			; se n�o acontecer erro fecha o ficheiro 
+	
+	mov	ah, 09h
+	lea	dx, msgErrorWrite
+	int	21h
+close:
+	mov	ah,3eh			; indica que vamos fechar
+	int	21h
+        call apaga_ecran		; fecha mesmo
+	jnc	mostramenu		; se não acontecer erro termina
+	
+	mov	ah, 09h
+	lea	dx, msgErrorClose
+	int	21h
+        jmp mostramenu
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ;########################################################################
 
 ; funcao sair
@@ -324,16 +801,12 @@ sair:
     
 ;########################################################################
 
-; cursor
-
-;########################################################################
-
 ; cria ficheiro
 
 
+
 ;########################################################################
 
-; ler tecla
 
 ;********************************************************************************
 ; leitura de uma tecla do teclado    (alterado)
@@ -511,16 +984,18 @@ JOGO    ENDP
 ; move snake
 move_snake proc
 call contador
+goto_xy 40,15
+;call PRINC
 ciclo:  
     
-    goto_xy     posx,posy   ; vai para nova possição
+    goto_xy     posx,posy   ; vai para nova posição
     mov     ah, 08h ; guarda o caracter que está na posição do cursor
     mov     bh,0        ; numero da página
     int     10h         
     cmp     al, '#' ;  na posição do cursor
     ;guarda pontuação
     ;aparece game over
-    je      fim
+    je      sair
 
     goto_xy     posxa,posya     ; vai para a posição anterior do cursor
     mov     ah, 02h
@@ -536,26 +1011,6 @@ ciclo:
     dec     posxa
         
     goto_xy     posx,posy   ; vai para posição do cursor
-
-;incrementa cobra
-;incsnake:
-    ; goto_xy       posxa,posya     ; vai para a posição anterior do cursor
-    ; mov       ah, 02h
-    ; cmp ah, ' '
-    ; jne incobra
-    
-;incobra:   
-    ; mov       dl, '('     ; coloca espaço
-    ; int       21h 
-
-    ; inc       posxa
-    ; goto_xy       posxa,posya 
-    ; mov       ah, 02h
-    ; mov       dl, ')'     ;  coloca espaço
-    ; int       21h 
-    ; dec   posxa
-        
-    ; goto_xy       posx,posy   ; vai para posição do cursor
 
 imprime:
 
@@ -668,6 +1123,7 @@ direita:
     jmp     ciclo
 
 fim:
+    call apaga_ecran
     goto_xy     40,23
     ret
 
