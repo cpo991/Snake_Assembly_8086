@@ -65,7 +65,12 @@ menujogoOpt db '                             __ ',13,10
             db '                           1 - Jogar com Moldura Default',13,10
             db '                           2 - Carregar Moludura editada',13,10
             db '                           3 - Sair',13,10
-            db ' ',13,10,'$'
+            db '  ',13,10
+            db '  ',13,10 
+            db '  ',13,10 
+            db '  ',13,10 
+            db '  ',13,10 
+            db '  ',13,10,'$'
 
 menumoldurasconf    db '                 _____             __  _  ',13,10
                     db '                / ____|           / _|(_)',13,10
@@ -185,11 +190,11 @@ sairjogo   db '                              Seseja mesmo sair?',13,10
 ;########################################################################
 
 ; pontuacao e dependencias
-len equ $ - texto 
 textPontos		db		'pontos:',10 dup(' '),'$'
 pontos			dw		0
-compr			db 		1 ;comprimento
+compr			db 		1 ;comprimento da cobra (não funciona ainda)
 
+; coordenadas para imprimir a pontuação
 pontosY			byte 	0
 pontosX 		byte 	52
 
@@ -854,7 +859,9 @@ sai_tecla:
 le_tecla_0  endp
 
     
-;########################################################################
+;#######################################################################
+; Calculo aleatório
+;#######################################################################
 
 CalcAleat proc near
 
@@ -1058,7 +1065,9 @@ CICLO:
 		cmp 	al, 'r'
 		je 		rato
         
-  
+;#######################################################################
+; trail é código experimental para crescer, provavelmente é para apagar
+;#######################################################################
 
 trail:
 
@@ -1066,13 +1075,18 @@ trail:
 	lea di,textPontos ;meter o ponteiro do espaço de memoria que tem um valor igual ao o que esta em textPontos e copiar esse ponteiro para di
 	call converte ;chama a funçao que converte os numeros em texto
 
+;########################################################################
+; Escreve no jogo a pontuação com coordenadas X e Y
+;########################################################################
+
 JogoEscreve:
 goto_xy pontosX, pontosY
         mov     ah,09h
         lea     dx,textPontos
         int     21h
 
-		
+
+
 apagatrail:
 
 		goto_xy		POSxa,POSya		; Vai para a posição anterior do cursor
@@ -1092,6 +1106,10 @@ apagatrail:
 	
 		goto_xy		POSx,POSy	; Vai para posição do cursor
 jmp IMPRIME
+
+;######################################################################
+; maçãs verdes
+;######################################################################
 
 verde:
 	add pontos,1
@@ -1122,6 +1140,9 @@ verde:
         int     21h
 	jmp trail
 	
+;######################################################################
+; maçãs vermelhas
+;######################################################################
 
 vermelho:
 	add pontos,2
@@ -1151,6 +1172,10 @@ vermelho:
         lea     dx,Svermelha
         int     21h
 	jmp trail
+
+;######################################################################
+; rato
+;######################################################################
 
 rato:
 
@@ -1214,11 +1239,19 @@ lower:
         lea     dx,SRato
         int     21h
 	jmp trail
-		
+
+;######################################################################
+; quando se come o rato, apaga pontos
+;######################################################################
+
 resetscore:
         mov pontos,0
         jmp continuarato
 
+
+;######################################################################
+; imprime o avatar
+;######################################################################
 
 imprime:	mov		ah, 02h
 		mov		dl, '('	; Coloca AVATAR1
