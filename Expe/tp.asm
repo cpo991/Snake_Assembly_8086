@@ -1168,6 +1168,31 @@ rato:
     cmp pontos,3
     jl  resetscore
 	sub pontos,3
+    call CalcAleat
+	POP    AX
+	
+	XOR    DX,DX
+	MOV    BX,60
+	div    BX
+	
+	ADD     DL,5
+	mov    posxm,DL
+	
+	call CalcAleat
+	POP    AX
+	
+	XOR    DX,DX
+	MOV    BX,15
+	div    BX
+	
+	ADD     DL,3
+	mov    posym,DL
+	
+	goto_xy posxm,posym
+    mov     ah,09h
+    lea     dx,SRato
+    int     21h
+	jmp trail
 
 ;######################################################################
 ; quando se come o rato, apaga pontos
