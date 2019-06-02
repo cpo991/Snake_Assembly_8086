@@ -132,6 +132,14 @@ sairjogo   db '                              Seseja mesmo sair?',13,10
            db '                        Sim [1]               Nao [2]',13,10
            db ' ',13,10,'$'
 
+menugameover db '                 ____                           ___',13,10
+             db '                / ___| __ _ _ __ ___   ___     / _ \__   _____ _ __',13,10
+             db '               | |  _ / _  |  _   _ \ / _ \   | | | \ \ / / _ \ \__|',13,10
+             db '               | |_| | (_| | | | | | |  __/   | |_| |\ V /  __/ |',13,10
+             db '                \____|\__,_|_| |_| |_|\___|    \___/  \_/ \___|_|',13,10
+             db ' ',13,10,'$' 
+
+
 ;########################################################################
 
 ; abre ficheiro de texto
@@ -234,8 +242,6 @@ inicio:
     mov     ds, ax
     mov     ax,0b800h
     mov     es,ax
-
-
 
 ;########################################################################
 
@@ -370,9 +376,9 @@ mostramenumoldurasJ:
     cmp     al, "1"
     je      JogarM1
     cmp     al, "2"
-    ;je      grelhaJ2
+    je      JogarM2
     cmp     al, "3"
-    ;je      grelhaJ3
+    je      JogarM3
     cmp     al, "4"
     je      mostramenu
 ;########################################################################       
@@ -396,9 +402,9 @@ mostramenumoldurasE:
     cmp     al, "1"
     je      grelhaE1  
     cmp     al, "2"
-    ;je      grelhaE2
+    je      grelhaE2
     cmp     al, "3"
-    ;je      grelhaE3
+    je      grelhaE3
     cmp     al, "4"
     je      mostramenu
     
@@ -426,6 +432,25 @@ fechajogo:
     je      sair
     cmp     al,'2'
     je      mostramenu
+
+;########################################################################
+
+; mostra menu game over
+mostramenugameover: 
+    call apaga_ecran
+    goto_xy 10,5
+    lea     dx, menugameover 
+    mov     ah, 09h 
+    int     21h 
+     
+    mov     ah, 1 
+    int     21h        
+            
+    lea si,pontos ;meter o ponteiro do espaço de memoria que tem um valor igual ao o que esta em pontos e copiar esse ponteiro para si
+	lea di,textPontos ;meter o ponteiro do espaço de memoria que tem um valor igual ao o que esta em textPontos e copiar esse ponteiro para di
+	call converte ;chama a funçao que converte os numeros em texto
+        MOV		AH,4CH
+	INT		21H
 
 ;########################################################################
 
@@ -652,6 +677,272 @@ EditaMold	endp
 
 ;########################################################################
 
+; Jogar moldura 2
+JogarM2 proc
+    mov     ah,3dh          ; vamos abrir ficheiro para leitura 
+    mov     al,0            ; tipo de ficheiro  
+    lea     dx,mol2         ; nome do ficheiro
+    int     21h             ; abre para leitura 
+    jc      erro_abrir2      ; pode aconter erro a abrir o ficheiro 
+    mov     handle2,ax   ; ax devolve o handle para o ficheiro 
+    jmp     ler_ciclo2       ; depois de abero vamos ler o ficheiro 
+erro_abrir2:
+    mov     ah,09h
+    lea     dx,erro_open
+    int     21h
+    jmp     sai2
+ler_ciclo2:
+    mov     ah,3fh          ; indica que vai ser lido um ficheiro 
+    mov     bx,handle2   ; bx deve conter o handle do ficheiro previamente aberto 
+    mov     cx,1            ; numero de bytes a ler 
+    lea     dx,car_m2     ; vai ler para o local de memoria apontado por dx (car_fich)
+    int     21h             ; faz efectivamente a leitura
+    jc      erro_ler2        ; se carry é porque aconteceu um erro
+    cmp     ax,0            ; eof?  verifica se já estamos no fim do ficheiro 
+    je      fecha_ficheiro2  ; se eof fecha o ficheiro 
+    mov     ah,02h          ; coloca o caracter no ecran
+    mov     dl,car_m2     ; este é o caracter a enviar para o ecran
+    int     21h             ; imprime no ecran
+    jmp     ler_ciclo2       ; continua a ler o ficheiro
+erro_ler2:
+    mov     ah,09h
+    lea     dx,erro_ler_msg
+    int     21h
+fecha_ficheiro2:                 ; vamos fechar o ficheiro 
+    mov     ah,3eh
+    mov     bx,handle2
+    int     21h
+    jnc     sai2
+    mov     ah,09h          ; o ficheiro pode não fechar correctamente
+    lea     dx,erro_close
+    int     21h
+sai2:      call move_snake
+    call mostramenugameover
+JogarM2 endp
+
+;     jmp     JogaMolduras
+
+; JogaMolduras:
+;     goto_xy 40,10
+;     call move_snake
+
+
+;########################################################################
+
+; Editar moldura
+grelhaE2:
+       call apaga_ecran
+;abre ficheiro
+    mov     ah,3dh			; vamos abrir ficheiro para leitura 
+    mov     al,0			; tipo de ficheiro	
+    lea     dx,mol2			; nome do ficheiro
+    int     21h			; abre para leitura 
+    jc      erro_ler2b		; pode aconter erro a abrir o ficheiro 
+    mov     Handle2,ax		; ax devolve o Handle para o ficheiro 
+    jmp     ler_ciclo2b		; depois de abero vamos ler o ficheiro 
+
+ler_ciclo2b:
+    mov     ah,3fh			; indica que vai ser lido um ficheiro 
+    mov     bx,handle2		; bx deve conter o Handle do ficheiro previamente aberto 
+    mov     cx,1			; numero de bytes a ler 
+    lea     dx,car_m2		; vai ler para o local de memoria apontado por dx (car_fich)
+    int     21h			; faz efectivamente a leitura
+	jc	    erro_ler2b		; se carry � porque aconteceu um erro
+	cmp	    ax,0			; EOF? Verifica se j� estamos no fim do ficheiro 
+	je	    fecha_ficheiro2b	; se EOF fecha o ficheiro 
+    mov     ah,02h			; coloca o caracter no ecran
+    mov	    dl,car_m2		; este � o caracter a enviar para o ecran
+    int	    21h			; imprime no ecran
+    jmp	    ler_ciclo2b		; continua a ler o ficheiro
+
+fecha_ficheiro2b:			; vamos fechar o ficheiro 
+    mov     ah,3eh
+    mov     bx,Handle2
+    int     21h
+     
+    call    EditaMold
+    call    GuardaM2
+
+erro_ler2b:
+    mov     ah,09h
+    lea     dx,erro_ler_msg
+    int     21h
+
+;########################################################################
+
+; Guardar Molduras
+GuardaM2:  
+	mov	ah, 3ch			; abrir ficheiro para escrita 
+	mov	cx, 00H			; tipo de ficheiro
+	lea	dx, mol2		; dx contem endereco do nome do ficheiro 
+	int	21h			    ; abre efectivamente e AX vai ficar com o Handle do ficheiro 
+	jnc	escreve2			; se n�o acontecer erro vamos escrever
+	
+	mov	ah, 09h			; Aconteceu erro na leitura
+	lea	dx, msgErrorCreate
+	int	21h
+	
+	jmp	sair
+
+escreve2:
+	mov	bx, ax			; para escrever BX deve conter o Handle 
+	mov	ah, 40h			; indica que vamos escrever 
+    	
+	lea	dx, buffer		; Vamos escrever o que estiver no endere�o DX
+	mov	cx, 4000		; vamos escrever multiplos bytes duma vez s�
+	int	21h			; faz a escrita 
+	jnc	close2			; se n�o acontecer erro fecha o ficheiro 
+	
+	mov	ah, 09h
+	lea	dx, msgErrorWrite
+	int	21h
+close2:
+	mov	ah,3eh			; indica que vamos fechar
+	int	21h
+        call apaga_ecran		; fecha mesmo
+	jnc	mostramenu		; se não acontecer erro termina
+	
+	mov	ah, 09h
+	lea	dx, msgErrorClose
+	int	21h
+    jmp mostramenu
+
+;#########################################################################
+
+; Jogar moldura criada
+JogarM3 proc
+    mov     ah,3dh          ; vamos abrir ficheiro para leitura 
+    mov     al,0            ; tipo de ficheiro  
+    lea     dx,mol3         ; nome do ficheiro
+    int     21h             ; abre para leitura 
+    jc      erro_abrir3      ; pode aconter erro a abrir o ficheiro 
+    mov     handle3,ax   ; ax devolve o handle para o ficheiro 
+    jmp     ler_ciclo3       ; depois de abero vamos ler o ficheiro 
+erro_abrir3:
+    mov     ah,09h
+    lea     dx,erro_open
+    int     21h
+    jmp     sai3
+ler_ciclo3:
+    mov     ah,3fh          ; indica que vai ser lido um ficheiro 
+    mov     bx,handle3   ; bx deve conter o handle do ficheiro previamente aberto 
+    mov     cx,1            ; numero de bytes a ler 
+    lea     dx,car_m3    ; vai ler para o local de memoria apontado por dx (car_fich)
+    int     21h             ; faz efectivamente a leitura
+    jc      erro_ler3        ; se carry é porque aconteceu um erro
+    cmp     ax,0            ; eof?  verifica se já estamos no fim do ficheiro 
+    je      fecha_ficheiro3  ; se eof fecha o ficheiro 
+    mov     ah,02h          ; coloca o caracter no ecran
+    mov     dl,car_m3     ; este é o caracter a enviar para o ecran
+    int     21h             ; imprime no ecran
+    jmp     ler_ciclo3       ; continua a ler o ficheiro
+erro_ler3:
+    mov     ah,09h
+    lea     dx,erro_ler_msg
+    int     21h
+fecha_ficheiro3:                 ; vamos fechar o ficheiro 
+    mov     ah,3eh
+    mov     bx,handle3
+    int     21h
+    jnc     sai3
+    mov     ah,09h          ; o ficheiro pode não fechar correctamente
+    lea     dx,erro_close
+    int     21h
+sai3:      call move_snake
+    call mostramenugameover
+
+JogarM3 endp
+
+;     jmp     JogaMolduras
+
+; JogaMolduras:
+;     goto_xy 40,10
+;     call move_snake
+
+
+;########################################################################
+
+; Editar moldura
+grelhaE3:
+       call apaga_ecran
+;abre ficheiro
+    mov     ah,3dh			; vamos abrir ficheiro para leitura 
+    mov     al,0			; tipo de ficheiro	
+    lea     dx,mol3			; nome do ficheiro
+    int     21h			; abre para leitura 
+    jc      erro_ler3b		; pode aconter erro a abrir o ficheiro 
+    mov     Handle3,ax		; ax devolve o Handle para o ficheiro 
+    jmp     ler_ciclo3b		; depois de abero vamos ler o ficheiro 
+
+ler_ciclo3b:
+    mov     ah,3fh			; indica que vai ser lido um ficheiro 
+    mov     bx,Handle3		; bx deve conter o Handle do ficheiro previamente aberto 
+    mov     cx,1			; numero de bytes a ler 
+    lea     dx,car_m3		; vai ler para o local de memoria apontado por dx (car_fich)
+    int     21h			; faz efectivamente a leitura
+	jc	    erro_ler3b		; se carry � porque aconteceu um erro
+	cmp	    ax,0			; EOF? Verifica se j� estamos no fim do ficheiro 
+	je	    fecha_ficheiro3b	; se EOF fecha o ficheiro 
+    mov     ah,02h			; coloca o caracter no ecran
+    mov	    dl,car_m3		; este � o caracter a enviar para o ecran
+    int	    21h			; imprime no ecran
+    jmp	    ler_ciclo3b		; continua a ler o ficheiro
+
+fecha_ficheiro3b:			; vamos fechar o ficheiro 
+    mov     ah,3eh
+    mov     bx,Handle3
+    int     21h
+     
+    call    EditaMold
+    call    GuardaM3
+
+erro_ler3b:
+    mov     ah,09h
+    lea     dx,erro_ler_msg
+    int     21h
+
+;########################################################################
+
+; Guardar Molduras
+GuardaM3:  
+	mov	ah, 3ch			; abrir ficheiro para escrita 
+	mov	cx, 00H			; tipo de ficheiro
+	lea	dx, mol3		; dx contem endereco do nome do ficheiro 
+	int	21h			    ; abre efectivamente e AX vai ficar com o Handle do ficheiro 
+	jnc	escreve3			; se n�o acontecer erro vamos escrever
+	
+	mov	ah, 09h			; Aconteceu erro na leitura
+	lea	dx, msgErrorCreate
+	int	21h
+	
+	jmp	sair
+
+escreve3:
+	mov	bx, ax			; para escrever BX deve conter o Handle 
+	mov	ah, 40h			; indica que vamos escrever 
+    	
+	lea	dx, buffer		; Vamos escrever o que estiver no endere�o DX
+	mov	cx, 4000		; vamos escrever multiplos bytes duma vez s�
+	int	21h			; faz a escrita 
+	jnc	close3			; se n�o acontecer erro fecha o ficheiro 
+	
+	mov	ah, 09h
+	lea	dx, msgErrorWrite
+	int	21h
+close3:
+	mov	ah,3eh			; indica que vamos fechar
+	int	21h
+        call apaga_ecran		; fecha mesmo
+	jnc	mostramenu		; se não acontecer erro termina
+	
+	mov	ah, 09h
+	lea	dx, msgErrorClose
+	int	21h
+    jmp mostramenu
+
+;########################################################################
+
+
 ; Jogar moldura criada
 JogarM1 proc
     mov     ah,3dh          ; vamos abrir ficheiro para leitura 
@@ -692,6 +983,7 @@ fecha_ficheiro1:                 ; vamos fechar o ficheiro
     lea     dx,erro_close
     int     21h
 sai1:      call move_snake
+    call mostramenugameover
 
 JogarM1 endp
 
@@ -749,9 +1041,9 @@ erro_ler1b:
 GuardaM1:  
 	mov	ah, 3ch			; abrir ficheiro para escrita 
 	mov	cx, 00H			; tipo de ficheiro
-	lea	dx, mol1		; dx contem endereco do nome do ficheiro 
+	lea	dx, mol1	    	; dx contem endereco do nome do ficheiro 
 	int	21h			    ; abre efectivamente e AX vai ficar com o Handle do ficheiro 
-	jnc	escreve			; se n�o acontecer erro vamos escrever
+	jnc	escreve1			; se n�o acontecer erro vamos escrever
 	
 	mov	ah, 09h			; Aconteceu erro na leitura
 	lea	dx, msgErrorCreate
@@ -759,19 +1051,19 @@ GuardaM1:
 	
 	jmp	sair
 
-escreve:
+escreve1:
 	mov	bx, ax			; para escrever BX deve conter o Handle 
 	mov	ah, 40h			; indica que vamos escrever 
     	
 	lea	dx, buffer		; Vamos escrever o que estiver no endere�o DX
 	mov	cx, 4000		; vamos escrever multiplos bytes duma vez s�
 	int	21h			; faz a escrita 
-	jnc	close			; se n�o acontecer erro fecha o ficheiro 
+	jnc	close1			; se n�o acontecer erro fecha o ficheiro 
 	
 	mov	ah, 09h
 	lea	dx, msgErrorWrite
 	int	21h
-close:
+close1:
 	mov	ah,3eh			; indica que vamos fechar
 	int	21h
         call apaga_ecran		; fecha mesmo
@@ -781,22 +1073,6 @@ close:
 	lea	dx, msgErrorClose
 	int	21h
     jmp mostramenu
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ;########################################################################
@@ -1024,7 +1300,7 @@ JOGO    PROC
 	CALL 	APAGA_ECRAN 
 	CALL	IMP_FICH
 	CALL	MOVE_SNAKE
-		
+    call mostramenugameover	
 	MOV		AH,4CH
 	INT		21H
 JOGO    ENDP
