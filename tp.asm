@@ -515,7 +515,6 @@ Legenda   proc
         ret
 Legenda   endp
 ;########################################################################
-
 ; Apagar Legenda
 Legendacls   proc
         goto_xy 70,2
@@ -539,7 +538,6 @@ Legendacls   endp
 
 
 ;########################################################################
-
 ; Mover cursor
 EditaMold  proc
     call    Legenda
@@ -568,26 +566,26 @@ IMPRIME:
 	je	ESTEND
     cmp     al, 115
     je      LeEcra
-	cmp 	al, 23                  ; ESCAPE
+	cmp 	al, 23                  
 	je	mostramenu             
 
 ;Tipo de caracteres
 ZERO:
-    CMP AL, 48             ; Tecla 0
+    CMP AL, 48             
 	JNE	UM
-	mov	Car, 32                 ; espaço
+	mov	Car, 32                 
 	jmp	CICLO					
 		
 UM:
-	CMP 	AL, 49             ; Tecla 1
+	CMP 	AL, 49             
 	JNE	DOIS
-	mov	Car, 35                ; Caracter #
+	mov	Car, 35               
 	jmp	CICLO
 
 DOIS:
-	CMP 	AL, 50             ; Tecla 2
+	CMP 	AL, 50            
 	JNE	Begin
-	mov	Car, 86                ; Caracter v
+	mov	Car, 86                
 	jmp	CICLO		
 		
 Begin:
@@ -607,7 +605,7 @@ NOVE:
 ESTEND:	
     cmp al,48h
 	jne	BAIXO
-	dec	POSy                    ; cima
+	dec	POSy                   
 COMPC:
     cmp     POSy,1
     je      INCREMy
@@ -616,7 +614,7 @@ COMPC:
 BAIXO:	
     cmp	al,50h
 	jne	ESQUERDA
-	inc 	POSy                ; Baixo
+	inc 	POSy
 COMPB:
     cmp     POSy,24
     je      DECREMy
@@ -625,7 +623,7 @@ COMPB:
 ESQUERDA:
 	cmp	al,4Bh
 	jne	DIREITA
-	dec	POSx                    ; Esquerda
+	dec	POSx                   
 COMPE:
     cmp     POSx,1
     je      INCREMx
@@ -634,7 +632,7 @@ COMPE:
 DIREITA:
 	cmp	al,4Dh
 	jne	CICLO 
-	inc	POSx                    ; Direita
+	inc	POSx                   
 COMPD:
     cmp     POSx,70
     je      DECREMx
@@ -684,7 +682,7 @@ JogarM2 proc
     lea     dx,mol2         ; nome do ficheiro
     int     21h             ; abre para leitura 
     jc      erro_abrir2      ; pode aconter erro a abrir o ficheiro 
-    mov     handle2,ax   ; ax devolve o handle para o ficheiro 
+    mov     handle2,ax   	; ax devolve o handle para o ficheiro 
     jmp     ler_ciclo2       ; depois de abero vamos ler o ficheiro 
 erro_abrir2:
     mov     ah,09h
@@ -693,17 +691,17 @@ erro_abrir2:
     jmp     sai2
 ler_ciclo2:
     mov     ah,3fh          ; indica que vai ser lido um ficheiro 
-    mov     bx,handle2   ; bx deve conter o handle do ficheiro previamente aberto 
+    mov     bx,handle2   	; bx deve conter o handle do ficheiro previamente aberto 
     mov     cx,1            ; numero de bytes a ler 
-    lea     dx,car_m2     ; vai ler para o local de memoria apontado por dx (car_fich)
+    lea     dx,car_m2     	; vai ler para o local de memoria apontado por dx (car_fich)
     int     21h             ; faz efectivamente a leitura
-    jc      erro_ler2        ; se carry é porque aconteceu um erro
+    jc      erro_ler2       ; se carry é porque aconteceu um erro
     cmp     ax,0            ; eof?  verifica se já estamos no fim do ficheiro 
-    je      fecha_ficheiro2  ; se eof fecha o ficheiro 
+    je      fecha_ficheiro2 ; se eof fecha o ficheiro 
     mov     ah,02h          ; coloca o caracter no ecran
-    mov     dl,car_m2     ; este é o caracter a enviar para o ecran
+    mov     dl,car_m2     	; este é o caracter a enviar para o ecran
     int     21h             ; imprime no ecran
-    jmp     ler_ciclo2       ; continua a ler o ficheiro
+    jmp     ler_ciclo2      ; continua a ler o ficheiro
 erro_ler2:
     mov     ah,09h
     lea     dx,erro_ler_msg
@@ -736,7 +734,7 @@ grelhaE2:
     mov     ah,3dh			; vamos abrir ficheiro para leitura 
     mov     al,0			; tipo de ficheiro	
     lea     dx,mol2			; nome do ficheiro
-    int     21h			; abre para leitura 
+    int     21h				; abre para leitura 
     jc      erro_ler2b		; pode aconter erro a abrir o ficheiro 
     mov     Handle2,ax		; ax devolve o Handle para o ficheiro 
     jmp     ler_ciclo2b		; depois de abero vamos ler o ficheiro 
@@ -746,13 +744,13 @@ ler_ciclo2b:
     mov     bx,handle2		; bx deve conter o Handle do ficheiro previamente aberto 
     mov     cx,1			; numero de bytes a ler 
     lea     dx,car_m2		; vai ler para o local de memoria apontado por dx (car_fich)
-    int     21h			; faz efectivamente a leitura
+    int     21h				; faz efectivamente a leitura
 	jc	    erro_ler2b		; se carry � porque aconteceu um erro
 	cmp	    ax,0			; EOF? Verifica se j� estamos no fim do ficheiro 
-	je	    fecha_ficheiro2b	; se EOF fecha o ficheiro 
+	je	    fecha_ficheiro2b; se EOF fecha o ficheiro 
     mov     ah,02h			; coloca o caracter no ecran
     mov	    dl,car_m2		; este � o caracter a enviar para o ecran
-    int	    21h			; imprime no ecran
+    int	    21h				; imprime no ecran
     jmp	    ler_ciclo2b		; continua a ler o ficheiro
 
 fecha_ficheiro2b:			; vamos fechar o ficheiro 
@@ -772,35 +770,35 @@ erro_ler2b:
 
 ; Guardar Molduras
 GuardaM2:  
-	mov	ah, 3ch			; abrir ficheiro para escrita 
-	mov	cx, 00H			; tipo de ficheiro
-	lea	dx, mol2		; dx contem endereco do nome do ficheiro 
-	int	21h			    ; abre efectivamente e AX vai ficar com o Handle do ficheiro 
+	mov	ah, 3ch				; abrir ficheiro para escrita 
+	mov	cx, 00H				; tipo de ficheiro
+	lea	dx, mol2			; dx contem endereco do nome do ficheiro 
+	int	21h			    	; abre efectivamente e AX vai ficar com o Handle do ficheiro 
 	jnc	escreve2			; se n�o acontecer erro vamos escrever
 	
-	mov	ah, 09h			; Aconteceu erro na leitura
+	mov	ah, 09h				; Aconteceu erro na leitura
 	lea	dx, msgErrorCreate
 	int	21h
 	
 	jmp	sair
 
 escreve2:
-	mov	bx, ax			; para escrever BX deve conter o Handle 
-	mov	ah, 40h			; indica que vamos escrever 
+	mov	bx, ax				; para escrever BX deve conter o Handle 
+	mov	ah, 40h				; indica que vamos escrever 
     	
-	lea	dx, buffer		; Vamos escrever o que estiver no endere�o DX
-	mov	cx, 4000		; vamos escrever multiplos bytes duma vez s�
-	int	21h			; faz a escrita 
-	jnc	close2			; se n�o acontecer erro fecha o ficheiro 
+	lea	dx, buffer			; Vamos escrever o que estiver no endere�o DX
+	mov	cx, 4000			; vamos escrever multiplos bytes duma vez s�
+	int	21h					; faz a escrita 
+	jnc	close2				; se n�o acontecer erro fecha o ficheiro 
 	
 	mov	ah, 09h
 	lea	dx, msgErrorWrite
 	int	21h
 close2:
-	mov	ah,3eh			; indica que vamos fechar
+	mov	ah,3eh				; indica que vamos fechar
 	int	21h
-        call apaga_ecran		; fecha mesmo
-	jnc	mostramenu		; se não acontecer erro termina
+        call apaga_ecran	; fecha mesmo
+	jnc	mostramenu		    ; se não acontecer erro termina
 	
 	mov	ah, 09h
 	lea	dx, msgErrorClose
@@ -815,9 +813,9 @@ JogarM3 proc
     mov     al,0            ; tipo de ficheiro  
     lea     dx,mol3         ; nome do ficheiro
     int     21h             ; abre para leitura 
-    jc      erro_abrir3      ; pode aconter erro a abrir o ficheiro 
-    mov     handle3,ax   ; ax devolve o handle para o ficheiro 
-    jmp     ler_ciclo3       ; depois de abero vamos ler o ficheiro 
+    jc      erro_abrir3     ; pode aconter erro a abrir o ficheiro 
+    mov     handle3,ax   	; ax devolve o handle para o ficheiro 
+    jmp     ler_ciclo3      ; depois de abero vamos ler o ficheiro 
 erro_abrir3:
     mov     ah,09h
     lea     dx,erro_open
@@ -825,17 +823,17 @@ erro_abrir3:
     jmp     sai3
 ler_ciclo3:
     mov     ah,3fh          ; indica que vai ser lido um ficheiro 
-    mov     bx,handle3   ; bx deve conter o handle do ficheiro previamente aberto 
+    mov     bx,handle3   	; bx deve conter o handle do ficheiro previamente aberto 
     mov     cx,1            ; numero de bytes a ler 
-    lea     dx,car_m3    ; vai ler para o local de memoria apontado por dx (car_fich)
+    lea     dx,car_m3    	; vai ler para o local de memoria apontado por dx (car_fich)
     int     21h             ; faz efectivamente a leitura
-    jc      erro_ler3        ; se carry é porque aconteceu um erro
+    jc      erro_ler3       ; se carry é porque aconteceu um erro
     cmp     ax,0            ; eof?  verifica se já estamos no fim do ficheiro 
-    je      fecha_ficheiro3  ; se eof fecha o ficheiro 
+    je      fecha_ficheiro3 ; se eof fecha o ficheiro 
     mov     ah,02h          ; coloca o caracter no ecran
-    mov     dl,car_m3     ; este é o caracter a enviar para o ecran
+    mov     dl,car_m3     	; este é o caracter a enviar para o ecran
     int     21h             ; imprime no ecran
-    jmp     ler_ciclo3       ; continua a ler o ficheiro
+    jmp     ler_ciclo3      ; continua a ler o ficheiro
 erro_ler3:
     mov     ah,09h
     lea     dx,erro_ler_msg
@@ -861,7 +859,6 @@ JogarM3 endp
 
 
 ;########################################################################
-
 ; Editar moldura
 grelhaE3:
        call apaga_ecran
@@ -869,7 +866,7 @@ grelhaE3:
     mov     ah,3dh			; vamos abrir ficheiro para leitura 
     mov     al,0			; tipo de ficheiro	
     lea     dx,mol3			; nome do ficheiro
-    int     21h			; abre para leitura 
+    int     21h				; abre para leitura 
     jc      erro_ler3b		; pode aconter erro a abrir o ficheiro 
     mov     Handle3,ax		; ax devolve o Handle para o ficheiro 
     jmp     ler_ciclo3b		; depois de abero vamos ler o ficheiro 
@@ -879,13 +876,13 @@ ler_ciclo3b:
     mov     bx,Handle3		; bx deve conter o Handle do ficheiro previamente aberto 
     mov     cx,1			; numero de bytes a ler 
     lea     dx,car_m3		; vai ler para o local de memoria apontado por dx (car_fich)
-    int     21h			; faz efectivamente a leitura
+    int     21h				; faz efectivamente a leitura
 	jc	    erro_ler3b		; se carry � porque aconteceu um erro
 	cmp	    ax,0			; EOF? Verifica se j� estamos no fim do ficheiro 
-	je	    fecha_ficheiro3b	; se EOF fecha o ficheiro 
+	je	    fecha_ficheiro3b; se EOF fecha o ficheiro 
     mov     ah,02h			; coloca o caracter no ecran
     mov	    dl,car_m3		; este � o caracter a enviar para o ecran
-    int	    21h			; imprime no ecran
+    int	    21h				; imprime no ecran
     jmp	    ler_ciclo3b		; continua a ler o ficheiro
 
 fecha_ficheiro3b:			; vamos fechar o ficheiro 
@@ -902,7 +899,6 @@ erro_ler3b:
     int     21h
 
 ;########################################################################
-
 ; Guardar Molduras
 GuardaM3:  
 	mov	ah, 3ch			; abrir ficheiro para escrita 
@@ -941,8 +937,6 @@ close3:
     jmp mostramenu
 
 ;########################################################################
-
-
 ; Jogar moldura criada
 JogarM1 proc
     mov     ah,3dh          ; vamos abrir ficheiro para leitura 
@@ -995,7 +989,6 @@ JogarM1 endp
 
 
 ;########################################################################
-
 ; Editar moldura
 grelhaE1:
        call apaga_ecran
@@ -1036,7 +1029,6 @@ erro_ler1b:
     int     21h
 
 ;########################################################################
-
 ; Guardar Molduras
 GuardaM1:  
 	mov	ah, 3ch			; abrir ficheiro para escrita 
@@ -1076,7 +1068,6 @@ close1:
 
 
 ;########################################################################
-
 ; funcao sair
 sair:
     call apaga_ecran
@@ -1086,8 +1077,6 @@ sair:
 ;########################################################################
 
 ; cria ficheiro
-
-
 
 ;########################################################################
 
@@ -1100,11 +1089,7 @@ sair:
 ; al devolve o código da tecla premida
 ; se não foi premida tecla, devolve ah=0 e al = 0
 ;********************************************************************************
-le_tecla_0  proc
-    ;   call    trata_horas
-    ;call contador
-    
-    
+le_tecla_0  proc    
     mov ah,0bh
     int     21h
     cmp     al,0
@@ -1144,7 +1129,7 @@ CalcAleat proc near
 	mov	ah,00h
 	int	1ah
 
-	add	dx,ultimo_num_aleat	; vai buscar o aleatório anterior
+	add	dx,ultimo_num_aleat	
 	add	cx,dx	
 	mov	ax,65521
 	push	dx
@@ -1154,9 +1139,9 @@ CalcAleat proc near
 	add	dx,32749
 	add	dx,ax
 
-	mov	ultimo_num_aleat,dx	; guarda o novo numero aleatório  
+	mov	ultimo_num_aleat,dx	 
 
-	mov	[BP+4],dx		; o aleatório é passado por pilha
+	mov	[BP+4],dx		
 
 	pop	dx
 	pop	cx
@@ -1166,7 +1151,6 @@ CalcAleat proc near
 CalcAleat endp
 
 ;########################################################################
-
 ; passa tempo
 passa_tempo proc    
     
@@ -1344,11 +1328,11 @@ converte endp
 ; move snake
 move_snake proc
 CICLO:	
-		goto_xy	POSx,POSy	; Vai para nova possição
-		mov 	ah, 08h	; Guarda o Caracter que está na posição do Cursor
-		mov		bh,0		; numero da página
+		goto_xy	POSx,POSy	
+		mov 	ah, 08h	
+		mov		bh,0		
 		int		10h			
-		cmp 	al, '#'	;  na posição do Cursor
+		cmp 	al, '#'	
 		je		fim
         cmp     al, 'x'
         je      fim
@@ -1360,14 +1344,13 @@ CICLO:
 		je 		rato
         
 ;#######################################################################
-;convertPont vai servir para contar e converter os pontos
+;	converter pontos para texto 
 ;#######################################################################
 
 convertPont:
-
-	lea si,pontos ;meter o ponteiro do espaço de memoria que tem um valor igual ao o que esta em pontos e copiar esse ponteiro para si
-	lea di,textPontos ;meter o ponteiro do espaço de memoria que tem um valor igual ao o que esta em textPontos e copiar esse ponteiro para di
-	call converte ;chama a funçao que converte os numeros em texto
+	lea si,pontos 
+	lea di,textPontos 
+	call converte 
 
 ;########################################################################
 ; Escreve no jogo a pontuação com coordenadas X e Y
@@ -1488,12 +1471,12 @@ rato:
 ; imprime o avatar
 ;######################################################################
 
-IMPRIME:goto_xy		POSx,POSy	; Vai para posição do cursor	
+IMPRIME:goto_xy		POSx,POSy	
 
 	mov		ah, 02h
-	mov		dl, 'o'	; escreve a cabeça
+	mov		dl, 'o'	
 	int		21H
-	cmp cresc,0			;se a flag estiver a 1, adicionar um elemento ao lado da cabeça e manter o resto
+	cmp cresc,0			
 	je tamAumenta
 	goto_xy		POSxa[bx],POSya[bx]	;	
 	mov		ah,02h
@@ -1503,7 +1486,7 @@ IMPRIME:goto_xy		POSx,POSy	; Vai para posição do cursor
 	jmp LER_SETA
 
 tamAumenta:
-	mov bx,0		;index a 0 e loop com tam para atualizar posições, cada elemento fica com a posição do próximo
+	mov bx,0		
 	mov cx,tam
 aumentaCobra:	
     mov al,POSxa[bx+1]
@@ -1513,7 +1496,7 @@ aumentaCobra:
 	add bx,1
 	loop aumentaCobra
 		
-	mov bx,tam		;index a tam (onde está o início da cauda) e loop que reescreve a cauda
+	mov bx,tam		
 	mov cx,tam
 
 apagaCauda:
@@ -1524,7 +1507,7 @@ apagaCauda:
 	sub bx,1
 	loop apagaCauda
 	
-	goto_xy		POSxa[bx],POSya[bx]	;	;apaga o fim da cauda
+	goto_xy		POSxa[bx],POSya[bx]	;	
 	mov		ah,02h
 	mov		dl,' '
 	int 21h
@@ -1549,9 +1532,9 @@ LER_SETA:
 	mov		AX, PASSA_T
 	mov		PASSA_T_ant, AX
 		
-	goto_xy	POSx,POSy	; Vai para posição do cursor
+	goto_xy	POSx,POSy	
 	mov 	bx,tam
-	mov		al, POSx	; guarda posição atual no elemento tam do vetor
+	mov		al, POSx	
 	mov		POSxa[bx], al
 	mov		al, POSy	
 	mov 	POSya[bx], al
@@ -1560,28 +1543,28 @@ verifica_0:
 	mov		al, direccao
 	cmp 	al, 0
 	jne		verifica_1
-	inc		POSx		;Direita
+	inc		POSx		
 	jmp		CICLO
 		
 verifica_1:	
     mov 		al, direccao
 	cmp		al, 1
 	jne		verifica_2
-	dec		POSy		;cima
+	dec		POSy		
 	jmp		CICLO
 		
 verifica_2:
 	mov 		al, direccao
 	cmp		al, 2
 	jne		verifica_3
-	dec		POSx		;Esquerda
+	dec		POSx		
 	jmp		CICLO
 		
 verifica_3:
 	mov 		al, direccao
 	cmp		al, 3		
 	jne		CICLO
-	inc		POSy		;BAIXO		
+	inc		POSy			
 	jmp		CICLO
 		
 ESTEND:		
